@@ -11,7 +11,7 @@ import streamlit as st;
 
 # Load Groq API key securely (assumes use of dotenv or st.secrets)
 # groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-groq_client = Groq(api_key=st.secrets("GROQ_API_KEY"))
+groq_client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 embed_model = SentenceTransformer("all-MiniLM-L6-v2")
 
