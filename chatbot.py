@@ -29,8 +29,8 @@ from diagramgen import generate_diagram_streamlit
 
 # --- Load environment ---
 load_dotenv()
-eleven_api_key = os.getenv("ELEVEN_API_KEY")
-
+# eleven_api_key = os.getenv("ELEVEN_API_KEY")
+eleven_api_key = st.secrets("ELEVEN_API_KEY")
 
 # --- Streamlit UI setup ---
 st.set_page_config(page_title="Groq Chatbot", layout="centered")
@@ -39,8 +39,10 @@ st.caption("Multimodal input: text, voice, or image → Groq LLM response → op
 
 # --- Sidebar ---
 with st.sidebar:
-    api_key = st.text_input("🔑 Groq API Key", type="password", value=os.getenv("GROQ_API_KEY", ""))
-    eleven_api_key = st.text_input("🗝️ ElevenLabs API Key", type="password", value=os.getenv("ELEVEN_API_KEY", ""))
+    # api_key = st.text_input("🔑 Groq API Key", type="password", value=os.getenv("GROQ_API_KEY", ""))
+    api_key = st.text_input("🔑 Groq API Key", type="password", value=st.secrets("GROQ_API_KEY", ""))
+    # eleven_api_key = st.text_input("🗝️ ElevenLabs API Key", type="password", value=os.getenv("ELEVEN_API_KEY", ""))
+    eleven_api_key = st.text_input("🗝️ ElevenLabs API Key", type="password", value=st.secrets("ELEVEN_API_KEY", ""))
     model = st.selectbox("🧠 Choose Model", [
         "mistral-saba-24b", 
         "llama3-70b-8192", 

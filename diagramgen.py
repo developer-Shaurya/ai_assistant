@@ -18,7 +18,8 @@ warnings.filterwarnings("ignore")
 # ------------------------------------------------------------
 # Configuration
 # ------------------------------------------------------------
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # <- Replace this with your actual API key
+# GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # <- Replace this with your actual API key
+GROQ_API_KEY = st.secrets("GROQ_API_KEY")
 GROQ_MODEL = "llama3-70b-8192"
 
 
