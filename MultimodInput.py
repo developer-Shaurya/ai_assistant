@@ -25,7 +25,7 @@ def get_user_query(input_mode, record_button_pressed=False):
         st.markdown("📤 Upload an image:")
         uploaded_image = st.file_uploader("", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
         if uploaded_image:
-            with st.spinner("🔍 Extracting text from image..."):
+            with st.spinner("Extracting text from image..."):
                 image = Image.open(uploaded_image)
                 st.image(image, caption="Uploaded Image", use_container_width =True)
                 text = pytesseract.image_to_string(image)
@@ -46,7 +46,7 @@ def get_user_query(input_mode, record_button_pressed=False):
 
             if record_button_pressed:
                 # 1️⃣ Show "Listening..." immediately
-                status_placeholder.info("🎤 Listening...")
+                status_placeholder.info("🎤 ClarifAi is Listening...")
 
                 recording = sd.rec(int(DURATION * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype='float32')
                 sd.wait()
@@ -55,7 +55,7 @@ def get_user_query(input_mode, record_button_pressed=False):
                 status_placeholder.empty()
 
                 # 3️⃣ Show "Transcribing..." message
-                status_placeholder.info("🧠 Transcribing with Whisper...")
+                status_placeholder.info("Transcribing ...")
 
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
                     sf.write(tmpfile.name, recording, SAMPLE_RATE)

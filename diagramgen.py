@@ -14,14 +14,11 @@ load_dotenv()
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 warnings.filterwarnings("ignore")
 
-
 # ------------------------------------------------------------
 # Configuration
 # ------------------------------------------------------------
-# GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # <- Replace this with your actual API key
-GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  
 GROQ_MODEL = "llama3-70b-8192"
-
 
 # ------------------------------------------------------------
 # Call Groq LLM API to generate DOT code
@@ -168,42 +165,40 @@ def fix_dot_syntax(dot_code: str) -> str:
 
     return "\n".join(["digraph concept_graph {", "rankdir=TB;"] + fixed_lines + ["}"])
 
-
-
 # ------------------------------------------------------------
 # Render DOT code using Graphviz
 # ------------------------------------------------------------
-def render_dot(dot_code, filename="concept_graph"):
-    try:
-        s = Source(dot_code, filename=filename, format="png")
-        output_path = s.render(cleanup=True)
-        print(f"📌 Diagram saved to: {output_path}")
-        img = Image.open(output_path)
-        plt.imshow(img)
-        plt.axis("off")
-        plt.title("Generated Diagram")
-        plt.show()
-    except Exception as e:
-        print("❌ Failed to render diagram:", e)
+# def render_dot(dot_code, filename="concept_graph"):
+#     try:
+#         s = Source(dot_code, filename=filename, format="png")
+#         output_path = s.render(cleanup=True)
+#         print(f"📌 Diagram saved to: {output_path}")
+#         img = Image.open(output_path)
+#         plt.imshow(img)
+#         plt.axis("off")
+#         plt.title("Generated Diagram")
+#         plt.show()
+#     except Exception as e:
+#         print("❌ Failed to render diagram:", e)
 
+# # ------------------------------------------------------------
+# # Entry point
+# # ------------------------------------------------------------
+# def generate_diagram_from_groq(prompt):
+#     response = query_groq(prompt)
+#     if not response:
+#         return
 
-# ------------------------------------------------------------
-# Entry point
-# ------------------------------------------------------------
-def generate_diagram_from_groq(prompt):
-    response = query_groq(prompt)
-    if not response:
-        return
+#     dot_code = extract_dot_code(response)
+#     if not dot_code:
+#         print("❌ Could not extract DOT code.")
+#         # print("📄 Full response:", response)
+#         return
 
-    dot_code = extract_dot_code(response)
-    if not dot_code:
-        print("❌ Could not extract DOT code.")
-        # print("📄 Full response:", response)
-        return
+#     dot_code = fix_dot_syntax(dot_code)
+#     print("\n🔧 Final DOT Code:\n", dot_code)
+#     render_dot(dot_code)
 
-    dot_code = fix_dot_syntax(dot_code)
-    print("\n🔧 Final DOT Code:\n", dot_code)
-    render_dot(dot_code)
 
 # 🔄 NEW Streamlit-compatible version
 def generate_diagram_streamlit(concept):
@@ -229,11 +224,3 @@ def generate_diagram_streamlit(concept):
         st.error(f"❌ Diagram rendering failed: {e}")
         return
 
-
-# CLI for testing
-if __name__ == "__main__":
-    try:
-        concept = input("📚 Enter a concept to visualize: ")
-        generate_diagram_from_groq(concept)
-    except EOFError:
-        print("⚠️ No input received.")

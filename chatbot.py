@@ -26,44 +26,43 @@ from MultimodInput import get_user_query
 # Import concept diagram generator logic
 from diagramgen import generate_diagram_streamlit
 
+# Import summarization logic
+from summarizer import load_and_split_pdf, summarize_pdf
 
 # --- Load environment ---
 load_dotenv()
-# eleven_api_key = os.getenv("ELEVEN_API_KEY")
-eleven_api_key = st.secrets["ELEVEN_API_KEY"]
+eleven_api_key = os.getenv("ELEVEN_API_KEY")
+api_key = os.getenv("GROQ_API_KEY")
 
 # --- Streamlit UI setup ---
 st.set_page_config(page_title="Groq Chatbot", layout="centered")
-st.title("🤖 AI-Powered Learning Assistant")
-st.caption("Multimodal input: text, voice, or image → Groq LLM response → optional voice output.")
+st.title("🤖 ClarifAI - AI Powered Learning Assistant")
+st.caption("Your AI Guru, Guiding You from Doubt to Wisdom. The Light of Knowledge in a Digital Avatar.")
 
 # --- Sidebar ---
 with st.sidebar:
     # api_key = st.text_input("🔑 Groq API Key", type="password", value=os.getenv("GROQ_API_KEY", ""))
-    api_key = st.text_input("🔑 Groq API Key", type="password", value=st.secrets["GROQ_API_KEY"])
     # eleven_api_key = st.text_input("🗝️ ElevenLabs API Key", type="password", value=os.getenv("ELEVEN_API_KEY", ""))
-    eleven_api_key = st.text_input("🗝️ ElevenLabs API Key", type="password", value=st.secrets["ELEVEN_API_KEY"])
-    model = st.selectbox("🧠 Choose Model", [
+    model = st.selectbox("Choose Model", [
         "mistral-saba-24b", 
         "llama3-70b-8192", 
     ], index=0)
 
-    input_mode = st.radio("🎛️ Input Type", ["Text", "Image", "Voice"])
-    speak_response = st.checkbox("🔊 Enable AI Voice Output", value=False)
+    input_mode = st.radio("Input Type", ["Text", "Image", "Voice"])
+    speak_response = st.checkbox("Enable AI Voice Output", value=False)
 
     # Show record button only in Voice mode
     record = False
     if input_mode == "Voice":
-        record = st.button("🎙️ Record your voice", key="record_btn")
+        record = st.button("Record your voice", key="record_btn")
 
-    generate_diagram_flag = st.sidebar.checkbox("📊 Generate Concept Diagram")
+    generate_diagram_flag = st.sidebar.checkbox("Generate Concept Diagram")
 
     # st.sidebar.markdown("---")
-    st.sidebar.subheader("📂 Document Q&A")
+    st.sidebar.subheader("Document Q&A")
     uploaded_file = st.sidebar.file_uploader("Upload PDF, DOCX, or TXT", type=["pdf", "docx", "txt"])
-    use_doc_context = st.sidebar.checkbox("🔍 Use document context")
-    # custom_summary_prompt = st.sidebar.text_input("🧾 Custom summarization prompt")
-    # trigger_summary = st.sidebar.button("Generate")
+    use_doc_context = st.sidebar.checkbox("Use document context")
+    summarize_button = st.button(" Summarize Uploaded PDF")
 
 # --- Chat History ---
 if "messages" not in st.session_state:
@@ -99,7 +98,7 @@ if api_key and user_query and generate_diagram_flag:
                     st.markdown(f"""
                     <div style="background-color: #2a2a2a; padding: 10px; border-radius: 8px; color: white; margin-top: 10px;">
                         <a href="data:image/png;base64,{img_b64}" download="concept_diagram.png"
-                        style="color: #00ffcc; text-decoration: none;">⬇️ Click to download concept diagram</a>
+                        style="color: #00ffcc; text-decoration: none;">Click to download concept diagram</a>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -153,6 +152,19 @@ if uploaded_file:
 
         st.success("✅ Document processed and ready!")
 
+if uploaded_file and summarize_button:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=uploaded_file.name) as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        file_path = tmp_file.name
+
+    with st.spinner("Summarizing PDF with ClarifAi..."):
+        try:
+            docs = load_and_split_pdf(file_path)
+            summary = summarize_pdf(docs)
+            st.success("✅ Summary Generated!")
+            st.text_area("PDF Summary", value=summary, height=300)
+        except Exception as e:
+            st.error(f"❌ Error summarizing PDF: {e}")
 
 if api_key and user_query and not generate_diagram_flag:
     st.session_state.messages.append({"role": "user", "content": user_query})
@@ -163,8 +175,7 @@ if api_key and user_query and not generate_diagram_flag:
             api_key=api_key
         )
 
-
-        with st.spinner("🤖 Groq is thinking..."):
+        with st.spinner("🤖 ClarifAi is thinking..."):
         # --- Context-Aware Prompt ---
             if use_doc_context and uploaded_file and st.session_state.vector_store:
                 context_chunks = get_relevant_chunks(user_query, st.session_state.vector_store)
@@ -182,7 +193,6 @@ if api_key and user_query and not generate_diagram_flag:
 
             st.session_state.messages.append({"role": "assistant", "content": reply})
 
-
         # --- Voice Output ---
         if speak_response and eleven_api_key:
             try:
@@ -195,7 +205,7 @@ if api_key and user_query and not generate_diagram_flag:
                 audio_bytes = b"".join(audio_generator)
                 threading.Thread(target=play_voice, args=(audio_bytes,), daemon=True).start()
             except Exception as e:
-                st.error(f"🔈 Voice Output Error: {e}")
+                st.error(f"Voice Output Error: {e}")
 
     except Exception as e:
         st.error(f"❌ LLM Error: {e}")
