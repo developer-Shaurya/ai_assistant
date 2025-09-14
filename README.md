@@ -22,16 +22,12 @@ Mentora is a Streamlit-based multifunctional AI chatbot tailored for learners, e
 - Generate concept visualizations based on query context using LLM-driven classification and rendering libraries like `Graphviz` and `Matplotlib`.</br>
 - Dynamically rendered inside the Streamlit app with download options.</br>
 
-### 📄 PDF Summarizer (summarizer.py)</br>
-
-- Upload any PDF and get concise summaries using Groq's `llama3-8b-8192`.</br>
-- Built using `langchain`, `PyPDFLoader`, and `map_reduce summarization chains`.</br>
-
 ### 📚 RAG-based Document Q&A (rag_module.py)</br>
 
 - Upload PDFs, DOCX, or TXT files.</br>
 - Query content semantically using `FAISS`, `Sentence Transformers`, and `Groq`.</br>
 - Context-aware response generation via `Retrieval-Augmented Generation`.</br>
+- Summarize uploaded documents with RAG-powered context understanding.</br>
 
 ### 🔈 Voice Output</br>
 
