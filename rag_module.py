@@ -6,8 +6,11 @@ from typing import List
 from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from groq import Groq
+from dotenv import load_dotenv
 import os
 import streamlit as st;
+
+load_dotenv()
 
 # Load Groq API key securely (assumes use of dotenv or st.secrets)
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -45,7 +48,7 @@ def get_relevant_chunks(query: str, vector_store, top_k: int = 5) -> List[str]:
 
 def query_groq(prompt: str) -> str:
     response = groq_client.chat.completions.create(
-        model="llama3-8b-8192",  # or another supported model
+        model="openai/gpt-oss-120b",  # or another supported model
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
     )

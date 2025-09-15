@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 # Configuration
 # ------------------------------------------------------------
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  
-GROQ_MODEL = "llama3-70b-8192"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 # ------------------------------------------------------------
 # Call Groq LLM API to generate DOT code
@@ -164,41 +164,6 @@ def fix_dot_syntax(dot_code: str) -> str:
     fixed_lines.extend(sorted(edges))
 
     return "\n".join(["digraph concept_graph {", "rankdir=TB;"] + fixed_lines + ["}"])
-
-# ------------------------------------------------------------
-# Render DOT code using Graphviz
-# ------------------------------------------------------------
-# def render_dot(dot_code, filename="concept_graph"):
-#     try:
-#         s = Source(dot_code, filename=filename, format="png")
-#         output_path = s.render(cleanup=True)
-#         print(f"📌 Diagram saved to: {output_path}")
-#         img = Image.open(output_path)
-#         plt.imshow(img)
-#         plt.axis("off")
-#         plt.title("Generated Diagram")
-#         plt.show()
-#     except Exception as e:
-#         print("❌ Failed to render diagram:", e)
-
-# # ------------------------------------------------------------
-# # Entry point
-# # ------------------------------------------------------------
-# def generate_diagram_from_groq(prompt):
-#     response = query_groq(prompt)
-#     if not response:
-#         return
-
-#     dot_code = extract_dot_code(response)
-#     if not dot_code:
-#         print("❌ Could not extract DOT code.")
-#         # print("📄 Full response:", response)
-#         return
-
-#     dot_code = fix_dot_syntax(dot_code)
-#     print("\n🔧 Final DOT Code:\n", dot_code)
-#     render_dot(dot_code)
-
 
 # 🔄 NEW Streamlit-compatible version
 def generate_diagram_streamlit(concept):

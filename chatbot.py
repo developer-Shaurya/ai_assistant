@@ -26,9 +26,6 @@ from MultimodInput import get_user_query
 # Import concept diagram generator logic
 from diagramgen import generate_diagram_streamlit
 
-# Import summarization logic
-from summarizer import load_and_split_pdf, summarize_pdf
-
 # --- Load environment ---
 load_dotenv()
 eleven_api_key = os.getenv("ELEVEN_API_KEY")
@@ -44,17 +41,19 @@ with st.sidebar:
     # api_key = st.text_input("🔑 Groq API Key", type="password", value=os.getenv("GROQ_API_KEY", ""))
     # eleven_api_key = st.text_input("🗝️ ElevenLabs API Key", type="password", value=os.getenv("ELEVEN_API_KEY", ""))
     model = st.selectbox("Choose Model", [
-        "mistral-saba-24b", 
+        "llama-3.3-70b-versatile",
         "llama3-70b-8192", 
+        "openai/gpt-oss-120b"
     ], index=0)
 
     input_mode = st.radio("Input Type", ["Text", "Image", "Voice"])
-    speak_response = st.checkbox("Enable AI Voice Output", value=False)
 
     # Show record button only in Voice mode
     record = False
     if input_mode == "Voice":
         record = st.button("Record your voice", key="record_btn")
+
+    speak_response = st.checkbox("Enable AI Voice Output", value=False)
 
     generate_diagram_flag = st.sidebar.checkbox("Generate Concept Diagram")
 
@@ -62,7 +61,7 @@ with st.sidebar:
     st.sidebar.subheader("Document Q&A")
     uploaded_file = st.sidebar.file_uploader("Upload PDF, DOCX, or TXT", type=["pdf", "docx", "txt"])
     use_doc_context = st.sidebar.checkbox("Use document context")
-    summarize_button = st.button(" Summarize Uploaded PDF")
+    # summarize_button = st.button(" Summarize Uploaded PDF")
 
 # --- Chat History ---
 if "messages" not in st.session_state:
@@ -151,20 +150,6 @@ if uploaded_file:
             st.session_state.processed_file_name = uploaded_file.name  # ✅ Track last processed file
 
         st.success("✅ Document processed and ready!")
-
-if uploaded_file and summarize_button:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=uploaded_file.name) as tmp_file:
-        tmp_file.write(uploaded_file.read())
-        file_path = tmp_file.name
-
-    with st.spinner("Summarizing PDF with ClarifAi..."):
-        try:
-            docs = load_and_split_pdf(file_path)
-            summary = summarize_pdf(docs)
-            st.success("✅ Summary Generated!")
-            st.text_area("PDF Summary", value=summary, height=300)
-        except Exception as e:
-            st.error(f"❌ Error summarizing PDF: {e}")
 
 if api_key and user_query and not generate_diagram_flag:
     st.session_state.messages.append({"role": "user", "content": user_query})
