@@ -1,0 +1,20 @@
+streamlit
+openai
+python-dotenv
+elevenlabs
+pydub
+requests
+graphviz
+pillow
+matplotlib   # optional (remove if unused)
+openai-whisper
+sounddevice
+soundfile
+pytesseract
+PyMuPDF
+python-docx
+numpy
+faiss-cpu
+sentence-transformers
+langchain-text-splitters
+groq
